@@ -2,10 +2,12 @@ package com.iternova.ecommerce.controller;
 
 import com.iternova.ecommerce.config.JwtProvider;
 import com.iternova.ecommerce.exception.UserException;
+import com.iternova.ecommerce.model.Cart;
 import com.iternova.ecommerce.model.User;
 import com.iternova.ecommerce.repository.UserRepository;
 import com.iternova.ecommerce.request.LoginRequest;
 import com.iternova.ecommerce.response.AuthResponse;
+import com.iternova.ecommerce.service.CartService;
 import com.iternova.ecommerce.service.CustomerUserServiceImp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +31,16 @@ public class AuthController {
     private CustomerUserServiceImp customerUserServiceImp;
     private PasswordEncoder passwordEncoder;
 
+    private CartService cartService;
 
-    public AuthController(UserRepository userRepository,JwtProvider jwtProvider , CustomerUserServiceImp customerUserServiceImp,PasswordEncoder passwordEncoder){
+
+    public AuthController(CartService cartService, UserRepository userRepository,JwtProvider jwtProvider , CustomerUserServiceImp customerUserServiceImp,PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
         this.customerUserServiceImp = customerUserServiceImp;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.cartService = cartService;
+
     }
 
     @PostMapping("/signup")
@@ -56,6 +62,7 @@ public class AuthController {
         createdUser.setLastName(lastName);
 
         User savedUser = userRepository.save(createdUser);
+        Cart cart = cartService.createCart(savedUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(savedUser.getEmail(),savedUser.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -40,7 +40,7 @@ public class Order {
     private Integer totalDiscountedPrice;
 
     private Integer discount;
-    private String orderedStatus;
+    private String orderStatus;
     private int totalItem;
     private LocalDateTime createdAt;
 
