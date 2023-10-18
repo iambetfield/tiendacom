@@ -40,9 +40,9 @@ public class UserServiceImp implements UserService {
 
         if (user == null) {
 
-            return null;
+            throw new UserException("user not found with email " + email);
         }
-        throw new UserException("hola");
+        return user;
     }
 
 }
