@@ -3,6 +3,7 @@ package com.iternova.ecommerce.controller;
 import com.iternova.ecommerce.exception.ProductException;
 import com.iternova.ecommerce.model.Product;
 import com.iternova.ecommerce.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class ProductController {
-
+    @Autowired
     private ProductService productService;
 
     @GetMapping("/products")
@@ -27,7 +28,7 @@ public class ProductController {
 
         Page<Product> res = productService.getAllProducts(category,color,size,minPrice,maxPrice,minDiscount,sort,stock,pageNumber,pageSize);
 
-        System.out.println("complete products");
+        System.out.println("complete products" + res.toString());
 
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }

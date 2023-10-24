@@ -3,12 +3,11 @@ package com.iternova.ecommerce.service;
 import com.iternova.ecommerce.exception.ProductException;
 import com.iternova.ecommerce.model.Category;
 import com.iternova.ecommerce.model.Product;
+import com.iternova.ecommerce.model.Size;
 import com.iternova.ecommerce.repository.CategoryRepository;
 import com.iternova.ecommerce.repository.ProductRepository;
+import com.iternova.ecommerce.repository.SizeRepository;
 import com.iternova.ecommerce.request.CreateProductRequest;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.List.of;
@@ -26,20 +27,23 @@ import static java.util.List.of;
 public class ProductServiceImp implements ProductService{
 
     private ProductRepository productRepository;
+    private SizeRepository sizeRepository;
+
     private UserService userService;
     private CategoryRepository categoryRepository;
 
-    public ProductServiceImp(ProductRepository productRepository, UserService userService, CategoryRepository categoryRepository){
+    public ProductServiceImp(SizeRepository sizeRepository, ProductRepository productRepository, UserService userService, CategoryRepository categoryRepository){
         this.productRepository = productRepository;
-        this.userService = userService;
+        this.userService=userService;
         this.categoryRepository = categoryRepository;
+        this.sizeRepository = sizeRepository;
     }
 
 
     @Override
     public Product createProduct(CreateProductRequest req) {
 
-        Category topLevel = categoryRepository.findByName(req.getSecondLabelCategory());
+        Category topLevel = categoryRepository.findByName(req.getTopLabelCategory());
 
         if(topLevel == null){
             Category topLevelCategory = new Category();
@@ -53,21 +57,24 @@ public class ProductServiceImp implements ProductService{
 
         if(secondLevel == null){
             Category secondLevelCategory = new Category();
-            secondLevelCategory.setName(req.getTopLabelCategory());
+            secondLevelCategory.setName(req.getSecondLabelCategory());
+            secondLevelCategory.setParentCategory(topLevel);
             secondLevelCategory.setLevel(2);
 
-            topLevel = categoryRepository.save(secondLevelCategory);
+            secondLevel = categoryRepository.save(secondLevelCategory);
         }
 
         Category thirdLevel = categoryRepository.findByNameAndParent(req.getThirdLabelCategory(),secondLevel.getName());
 
         if(thirdLevel == null){
             Category thirdLevelCategory = new Category();
-            thirdLevelCategory.setName(req.getTopLabelCategory());
+            thirdLevelCategory.setName(req.getThirdLabelCategory());
+            thirdLevelCategory.setParentCategory(secondLevel);
             thirdLevelCategory.setLevel(3);
 
-            topLevel = categoryRepository.save(thirdLevelCategory);
+            thirdLevel = categoryRepository.save(thirdLevelCategory);
         }
+
     Product product = new Product();
         product.setTitle(req.getTitle());
         product.setColor(req.getColor());
@@ -77,10 +84,21 @@ public class ProductServiceImp implements ProductService{
         product.setImageUrl(req.getImageUrl());
         product.setBrand(req.getBrand());
         product.setPrice(req.getPrice());
-        product.setSizes(req.getSize());
+        //product.setSizes(req.getSize());
         product.setQuantity(req.getQuantity());
         product.setCategory(thirdLevel);
         product.setCreatedAt(LocalDateTime.now());
+
+        Set<Size> sizes = new HashSet<>();
+        for (Size sizeRequest : req.getSize()) {
+            Size size = new Size();
+            size.setName(sizeRequest.getName());
+            size.setQuantity(sizeRequest.getQuantity());
+            // Guardar el objeto Size
+            size = sizeRepository.save(size);
+            sizes.add(size);
+        }
+        product.setSizes(sizes);
 
         Product savedProduct = productRepository.save(product);
         System.out.println("Products" + product);

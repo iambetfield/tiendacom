@@ -36,7 +36,7 @@ public class Product {
 
     private String color;
 
-    @Embedded
+
     @ElementCollection
     @Column(name = "sizes")
     private Set<Size> sizes = new HashSet<Size>();
