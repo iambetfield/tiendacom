@@ -69,6 +69,7 @@ public class CartServiceImp implements CartService{
             totalDiscountedPrice = totalDiscountedPrice + cartItem.getDiscountedPrice();
             totalItem = totalItem + cartItem.getQuantity();
         }
+        //cart.setCartItems(cart.getCartItems());
         cart.setTotalDiscountedPrice(totalDiscountedPrice);
         cart.setTotalItem(totalItem);
         cart.setTotalPrice(totalPrice);

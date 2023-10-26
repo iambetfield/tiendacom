@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImp implements OrderService{
@@ -36,7 +37,7 @@ public class OrderServiceImp implements OrderService{
 
     @Override
     public Order createOrder(User user, Address shippingAddress) {
-
+        System.out.println("Entramos en el servicio para CREAR LA ORDEN");
         shippingAddress.setUser(user);
         Address address = addressRepository.save(shippingAddress);
         user.getAddress().add(address);
@@ -46,7 +47,9 @@ public class OrderServiceImp implements OrderService{
         List<OrderItem> orderItems = new ArrayList<>();
 
         for(CartItem item : cart.getCartItems()){
-            OrderItem orderItem =new OrderItem();
+            OrderItem orderItem = new OrderItem();
+
+
             orderItem.setPrice(item.getPrice());
             orderItem.setProduct(item.getProduct());
             orderItem.setQuantity(item.getQuantity());
@@ -75,17 +78,26 @@ public class OrderServiceImp implements OrderService{
 
         Order savedOrder = orderRepository.save(createdOrder);
 
-        for(OrderItem item: orderItems){
+        // Crear una copia de la lista orderItems
+        List<OrderItem> orderItemsCopy = new ArrayList<>(orderItems);
+
+        // Iterar sobre la copia
+        for (OrderItem item : orderItemsCopy) {
             item.setOrder(savedOrder);
+
             orderItemRepository.save(item);
         }
-
+        System.out.println("orden creada con EXITO");
         return savedOrder;
     }
 
     @Override
     public Order findOrderById(Long orderId) throws OrderException {
-        return null;
+        Optional<Order> optional = orderRepository.findById(orderId);
+        if(optional.isPresent()){
+            return optional.get();
+        }
+        throw new OrderException("order not exist with id"+ orderId);
     }
 
     @Override

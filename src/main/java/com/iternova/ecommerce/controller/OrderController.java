@@ -23,7 +23,10 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/")
     public ResponseEntity<Order> createOrder(@RequestBody Address shippingAddres, @RequestHeader("Authorization") String jwt) throws UserException{
+        System.out.println("Shipping Address:");
+        System.out.println(shippingAddres);
         User user = userService.findUserProfileByJwt(jwt);
         Order order = orderService.createOrder(user, shippingAddres);
 
@@ -40,12 +43,17 @@ public class OrderController {
         return new ResponseEntity<>(orders,HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<Order> findOrderById(
-            @PathVariable("id") Long orderId, @RequestHeader("Authorization") String jwt) throws UserException, OrderException{
+            @PathVariable("orderId") Long orderId, @RequestHeader("Authorization") String jwt) throws UserException, OrderException{
+        System.out.println("Entramos al GET de ORDEN");
+        System.out.println("El id que viene por parámetro es: " + orderId);
+
         User user = userService.findUserProfileByJwt(jwt);
 
         Order order = orderService.findOrderById(orderId);
+
+        System.out.println("ORDEN GET ENCONTRADA" + order.toString());
 
         return new ResponseEntity<>(order,HttpStatus.CREATED);
     }

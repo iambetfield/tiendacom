@@ -145,16 +145,19 @@ public class ProductServiceImp implements ProductService{
                                         Integer minPrice, Integer maxPrice,
                                         Integer minDiscount, String sort,
                                         String stock, Integer pageNumber, Integer pageSize) {
-
+        //creamos un objeto Pageable, con el número de página solicitado y el tamaño de la página
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
 
+        //traemos una lista incial de productos según los parámetros pasados
         List<Product> products = productRepository.filterProducts(category,minPrice,maxPrice,minDiscount,sort);
 
-
+        //iniciamos un primer filtro según colores, utilizamos stream para filtrar y devolver en la misma lista
         if(!colors.isEmpty()){
             products = products.stream().filter(p-> colors.stream().anyMatch(c-> c.equalsIgnoreCase(p.getColor())))
                     .collect(Collectors.toList());
         }
+
+        //ahora se filtran depende si hay stock o no
         if(stock!= null){
             if(stock.equals("in_stock")){
                 products = products.stream().filter(p -> p.getQuantity()>0).collect(Collectors.toList());
@@ -162,10 +165,21 @@ public class ProductServiceImp implements ProductService{
                 products = products.stream().filter(p-> p.getQuantity()<1).collect(Collectors.toList());
             }
         }
+        //Se calcula el índice de inicio y el índice de fin para obtener los elementos necesarios
+        // de la lista de productos para la página actual.
+        // Esto se hace en función de la información de paginación proporcionada por pageable.
         int startIndex = (int) pageable.getOffset();
         int endIndex = Math.min(startIndex+pageable.getPageSize(), products.size());
 
+        System.out.println("pagina de inicio: "+ startIndex);
+        System.out.println("pagina final: " + endIndex);
+
+        //Se obtiene el contenido de la página actual extrayendo los elementos de la lista products
+        // entre startIndex y endIndex.
         List<Product> pageContent = products.subList(startIndex,endIndex);
+
+
+        //se crea un objeto Page con el contenido de la pagina, la info de paginación y el tamaño total de la lista
         Page<Product> filteredProducts = new PageImpl<>(pageContent,pageable, products.size());
 
         return filteredProducts;

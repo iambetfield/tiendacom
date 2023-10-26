@@ -3,7 +3,7 @@ package com.iternova.ecommerce.controller;
 import com.iternova.ecommerce.exception.ProductException;
 import com.iternova.ecommerce.model.Product;
 import com.iternova.ecommerce.request.CreateProductRequest;
-import com.iternova.ecommerce.response.ApiReponse;
+import com.iternova.ecommerce.response.ApiResponse;
 import com.iternova.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,10 +25,10 @@ public class AdminProductController {
         return new ResponseEntity<Product>(product, HttpStatus.CREATED);
     }
     @DeleteMapping("/{productId}/delete")
-    public ResponseEntity<ApiReponse>deleteProduct(@PathVariable Long productId) throws ProductException {
+    public ResponseEntity<ApiResponse>deleteProduct(@PathVariable Long productId) throws ProductException {
         productService.deleteProduct(productId);
 
-        ApiReponse res = new ApiReponse();
+        ApiResponse res = new ApiResponse();
         res.setMessage("order deleted successfully");
         res.setStatus(true);
 
@@ -49,11 +49,11 @@ public class AdminProductController {
     }
 
     @PostMapping("/creates")
-    public ResponseEntity<ApiReponse> createMultipleProducts(@RequestBody CreateProductRequest[] req){
+    public ResponseEntity<ApiResponse> createMultipleProducts(@RequestBody CreateProductRequest[] req){
         for(CreateProductRequest product: req){
             productService.createProduct(product);
         }
-        ApiReponse res = new ApiReponse();
+        ApiResponse res = new ApiResponse();
         res.setMessage("product created successfully");
         res.setStatus(true);
 

@@ -5,7 +5,7 @@ import com.iternova.ecommerce.exception.UserException;
 import com.iternova.ecommerce.model.Cart;
 import com.iternova.ecommerce.model.User;
 import com.iternova.ecommerce.request.AddItemRequest;
-import com.iternova.ecommerce.response.ApiReponse;
+import com.iternova.ecommerce.response.ApiResponse;
 import com.iternova.ecommerce.service.CartService;
 import com.iternova.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +32,12 @@ public class CartController {
     }
 
     @PutMapping("/add")
-    public ResponseEntity<ApiReponse> addItemToCart(@RequestBody AddItemRequest req, @RequestHeader("Authorization") String jwt) throws UserException, ProductException{
+    public ResponseEntity<ApiResponse> addItemToCart(@RequestBody AddItemRequest req, @RequestHeader("Authorization") String jwt) throws UserException, ProductException{
         User user = userService.findUserProfileByJwt(jwt);
 
         cartService.addCartItem(user.getId(), req);
 
-        ApiReponse res = new ApiReponse();
+        ApiResponse res = new ApiResponse();
         res.setMessage("item added to cart");
         res.setStatus(true);
 

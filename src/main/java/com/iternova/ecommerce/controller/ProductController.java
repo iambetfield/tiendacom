@@ -27,7 +27,7 @@ public class ProductController {
             @RequestParam Integer pageNumber, @RequestParam Integer pageSize){
 
         Page<Product> res = productService.getAllProducts(category,color,size,minPrice,maxPrice,minDiscount,sort,stock,pageNumber,pageSize);
-
+        System.out.println("numero de página que viene por parámetro:" + pageNumber);
         System.out.println("complete products" + res.toString());
 
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
