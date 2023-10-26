@@ -27,8 +27,8 @@ public class ProductController {
             @RequestParam Integer pageNumber, @RequestParam Integer pageSize){
 
         Page<Product> res = productService.getAllProducts(category,color,size,minPrice,maxPrice,minDiscount,sort,stock,pageNumber,pageSize);
-        System.out.println("numero de página que viene por parámetro:" + pageNumber);
-        System.out.println("complete products" + res.toString());
+        //System.out.println("numero de página que viene por parámetro:" + pageNumber);
+        //System.out.println("complete products" + res.toString());
 
         return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
     }
@@ -39,6 +39,15 @@ public class ProductController {
         Product product = productService.findProductById(productId);
 
         return new ResponseEntity<>(product,HttpStatus.ACCEPTED);
+    }
+    @GetMapping("/products/{category}")
+    public ResponseEntity<List<Product>> findProductsByCategory (@PathVariable String category){
+
+        System.out.println("CATEGORIA: "+ category);
+
+        List<Product> products = productService.findProductsByCategory(category);
+
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
 

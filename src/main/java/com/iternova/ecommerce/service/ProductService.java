@@ -24,4 +24,6 @@ public interface ProductService {
                                         Integer PageNumber, Integer pageSize);
 
     public List<Product> findAllproducts();
+
+    public List<Product> findProductsByCategory(String category);
 }

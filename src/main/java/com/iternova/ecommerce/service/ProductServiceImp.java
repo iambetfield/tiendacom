@@ -191,4 +191,10 @@ public class ProductServiceImp implements ProductService{
 
         return products;
     }
+
+    @Override
+    public List<Product> findProductsByCategory(String category) {
+        List<Product> products = productRepository.filterProductsByCategory(category);
+        return products;
+    }
 }
